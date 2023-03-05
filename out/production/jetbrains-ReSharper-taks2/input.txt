@@ -1,0 +1,16 @@
+# Please do not modify lines starting with '#'
+
+# Insert N (number of study hours) on the line below
+7
+
+# Insert M (number of topics in book) on the line below
+3
+
+# Insert L (number of questions on the exam) on the line below
+6
+
+# Insert M numbers separated by a ',' representing Ti (the numbers of hours it takes to study the ith chapter)
+2,4,4
+
+# Insert M numbers separated by a ',' representing Ki (the number of questions in the ith chapter)
+7,8,13
