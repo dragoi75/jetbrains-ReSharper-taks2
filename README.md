@@ -9,15 +9,23 @@ Unfortunately,`N` hours is not enough time to completely study all the topics, b
 What is the best way to use limited time to maximize the chances of getting the best possible grade?
 
 ## Implementation idea
-I will use a greedy algorithm to determine the best combination of exercises to be completed. Given that in the exam,
-all exercises have the same probability of appearing, the best choice would be for the student to first do the
-chapters that have the **most questions** but that require the **least amount of time** to be completed. Therefore,
-we can choose the chapters in _descending_ order based on the ratio of `Ki / Ti`, with `Ki` the number of questions
-topic `i` has, and `Ti` the number of hours it takes to do the `i-th` topic.
+I will use a dynamic programming algorithm to determine the best combination of exercises to be completed.
+At every step, the algorithm calculates if for the given combination of hours remaining (`N-i`), `Kj` and `Tj` it would
+be better to skip the exercise or include it in the study plan.
 
-In case a chosen chapter is too large to be studied in the remaining time, the algorithm will choose the next 
-best option. If there are no chapters that would fit in the remaining time, the algorithm will suggest the best chapter
-to be partially studied.
+The formula is `memo[i][j] = Math.max(memo[i][j-1], memo[Math.max(0, i-time[j])][j-1] + questions[j])`, where `i` is the
+current amount of hours already studied, `j` is the number of the chapter in question. If the first term of the
+`Math.max()` function is bigger, we are better with skipping the current chapter.
+If the latter is bigger, that means we would gain more from studying the current chapter. 
+
+To put it in a more abstract way, at a point in time `i`, we "look back" and see
+how the path chosen at hour `i - Tj` to study the current chapter, compares to all other paths that would lead us to
+the current time `i`, but at the end of the previous chapter (`j-1`). This propagates through the memory matrix and
+leads to the result (total number of problems which the students studied) at `memo[N][M]`.
+
+From there, we backtrack, to find the chapters that lead to this optimal solution. To find them, we check if the value
+in the memory array at position `[currentHour][j]` is equal to the value from `[currentHour-Tj][j-1]` plus `K[j]`.
+If they are equal, it means that the `j-th` chapter is part of the optimal solution.
 
 ## Input
 Please refer to the _input.txt_ file under _src/resources_.
@@ -28,24 +36,22 @@ Please run the `Main.main()` method. This will automatically output the list of 
 in a to-do list format.
 
 ## Testing
-There is 95% Method coverage and 90% Line coverage. The only method that is not tested is 
+There is 93% Method and Line coverage. The only method that is not tested is 
 `Main.main()`, but all the functions called in `main` are tested.
 
 ## Complexity
 ### 1. Time complexity
 
-The time complexity of the `StudyPlanGenerator.createChapters()` method is `O(M log(M))`
-because of the `sort` method.
+The time complexity of the `DPStudyPlanGenerator.calculateOptimalPlan()` method is `O(NM)` for the memoization step and
+`O(M)` for the backtracking step which select the chapters to be studied. Therefore, the total complexity is `O(NM)`.
 
-For `StudyPlanGenerator.calculateOptimalPlan()`, the complexity is upper bounded by `M`.
-
-And for the `StudyPlanGenerator.printOptimalPlan()`, the complexity is also `O(M)`, as there can be at most
+And for the `DPStudyPlanGenerator.printOptimalPlan()`, the complexity is also `O(M)`, as there can be at most
 `M` chapters to be studied.
 
-All other methods of the `StudyPlanGenerator` class run in constant time. The same applies for all methods of the
-`Chapter` class.
+All other methods of the `DPStudyPlanGenerator` class run in constant time.
 
-Therefore, the **total complexity** of the program is `O(M + M + M*log(M) + C) = O(M log(M))`, where `C` is a constant.
+Therefore, the **total complexity** of the program is `O(M + NM + C) = O(NM)`, where `C` is a constant.
 
 ### 2. Space complexity
-The total **space complexity** is `O(3 * M + C) = O(M)`, for `M` the number of topics, and some constant `C`.
+The total **space complexity** is upper bounded by`O(NM)`, for `N` the number of hours to study
+and `M` the number of topics. This is because of the memoization matrix.

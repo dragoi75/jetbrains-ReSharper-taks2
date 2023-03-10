@@ -1,20 +1,20 @@
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
-public class StudyPlanGenerator {
+public class DPStudyPlanGenerator {
 
-    private int N, M, partial = -1;
+    private int N, M;
     private int[] time, questions;
 
-    private Chapter[] chapters;
+    private int[][] memo;
 
     private List<Integer> toBeStudied;
 
     /**
      * Empty constructor
      */
-    public StudyPlanGenerator() { }
+    public DPStudyPlanGenerator() { }
 
     /**
      * Constructor used for testing only.
@@ -24,22 +24,12 @@ public class StudyPlanGenerator {
      * @param time - time it takes to study each chapter
      * @param questions - number of questions per chapter
      */
-    public StudyPlanGenerator(int n, int m, int[] time, int[] questions) {
+    public DPStudyPlanGenerator(int n, int m, int[] time, int[] questions) {
         N = n;
         M = m;
         this.time = time;
         this.questions = questions;
-    }
-
-    /**
-     * Creates a list of chapters and sorts them descending based on Ki / Ti
-     */
-    public void createChapters() {
-        chapters = new Chapter[M + 1];
-        for(int i = 1; i <= M; i++) {
-            chapters[i] = new Chapter(i, questions[i], time[i]);
-        }
-        Arrays.sort(chapters, 1, M+1);
+        memo = new int[N+1][M+1];
     }
 
     public int getN() {
@@ -63,7 +53,6 @@ public class StudyPlanGenerator {
         if(m <= 0)
             throw new RuntimeException("M must be positive");
         M = m;
-        chapters = new Chapter[m+1];
     }
 
     /**
@@ -101,15 +90,6 @@ public class StudyPlanGenerator {
         return toBeStudied;
     }
 
-    /**
-     * Getter for the partial chapter to be studied.
-     *
-     * @return number of chapter or -1 is no such chapter exists.
-     */
-    public int getPartial() {
-        return partial;
-    }
-
     public int[] getTime() {
         return time;
     }
@@ -118,33 +98,29 @@ public class StudyPlanGenerator {
         return questions;
     }
 
-    /**
-     * Instantiates toBeStudied with a list of the chapter numbers.
-     * Instantiates partial with the number of the chapter, if it exists.
-     */
     public void calculateOptimalPlan() {
-        toBeStudied = new ArrayList<>();
-        Chapter current = null;
-        int totalStudiedHours = 0;
-
-        for (int i = 1; i <= M && totalStudiedHours < N; i++) {
-            current = chapters[i];
-
-            if(totalStudiedHours + current.numberOfHours() <= N) {
-                toBeStudied.add(current.numberOfChapter());
-                totalStudiedHours += current.numberOfHours();
+        this.memo = new int[N+1][M+1];
+        for(int j = 1; j <= M; j++) {
+            for(int i = 1; i<= N; i++) {
+                if(i >= time[j])
+                  memo[i][j] = Math.max(memo[i][j-1], memo[Math.max(0, i-time[j])][j-1] + questions[j]);
+                else
+                    memo[i][j] = memo[i][j-1];
             }
-            else if(partial == -1)
-                partial = current.numberOfChapter();
         }
 
-        if(current != null && totalStudiedHours == N)
-            partial = -1;
+        //backtrack to find the optimal solution
+        int currentHour = N;
+        toBeStudied = new ArrayList<>();
+        for(int j = M; j>=1 ; j--) {
+            if(memo[currentHour][j] == memo[Math.max(0, currentHour-time[j])][j-1] + questions[j]) {
+                toBeStudied.add(j);
+                currentHour = Math.max(0, currentHour - time[j]);
+            }
+        }
+        toBeStudied.sort(Comparator.naturalOrder());
     }
 
-    /**
-     * Prints the result of the optimal plan, if it was calculated before.
-     */
     public void printOptimalPlan() {
         System.out.println();
 
@@ -156,8 +132,5 @@ public class StudyPlanGenerator {
         System.out.println("You should study the following chapters: ");
         for(int n : toBeStudied)
             System.out.println("[ ] Chapter " + n);
-        if(partial != -1) {
-            System.out.println("[ ] Part of chapter " + partial);
-        }
     }
 }

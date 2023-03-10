@@ -6,18 +6,16 @@ import java.text.ParseException;
 public class Main {
 
     public static void main(String[] args) throws Exception {
-        StudyPlanGenerator studyPlanGenerator = new StudyPlanGenerator();
+        DPStudyPlanGenerator studyPlanGenerator = new DPStudyPlanGenerator();
 
         read(studyPlanGenerator, "src/resources/input.txt");
-
-        studyPlanGenerator.createChapters();
 
         studyPlanGenerator.calculateOptimalPlan();
 
         studyPlanGenerator.printOptimalPlan();
     }
 
-    public static void read(StudyPlanGenerator studyPlanGenerator, String path) throws Exception {
+    public static void read(DPStudyPlanGenerator studyPlanGenerator, String path) throws Exception {
         File data = new File(path);
 
         BufferedReader br = new BufferedReader(new FileReader(data));
