@@ -1,4 +1,8 @@
-# Internship application task 2 for the *Unlocking the potential of AI-Powered Code Assistance with GPT-3 and Codex* position
+# [Initial Version] Internship application task 2 for the *Unlocking the potential of AI-Powered Code Assistance with GPT-3 and Codex* position
+
+## Disclaimer
+It was pointed out that this version does not yield the best results, so an updated algorithm is available on
+the main branch.
 
 ## Task prompt
 A programmer has an upcoming exam and only has `N` hours left to prepare.
