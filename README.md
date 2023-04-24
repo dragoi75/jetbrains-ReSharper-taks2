@@ -1,5 +1,8 @@
 # Internship application task 2 for the *Unlocking the potential of AI-Powered Code Assistance with GPT-3 and Codex* position
 
+## Remark
+This project is archived and no longer worked on.
+
 ## Task prompt
 A programmer has an upcoming exam and only has `N` hours left to prepare.
 The textbook has `M` topics, each of which requires a certain amount of hours `Ti` for studying,
